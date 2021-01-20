@@ -32,6 +32,7 @@ namespace ProAgil.WebApi
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlite(connection));
                 
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -54,6 +55,7 @@ namespace ProAgil.WebApi
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseCors( x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>
             {
