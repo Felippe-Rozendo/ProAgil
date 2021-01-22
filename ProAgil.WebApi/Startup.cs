@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using ProAgil.WebApi.Data;
+using ProAgil.Repository;
 
 namespace ProAgil.WebApi
 {
@@ -29,10 +29,11 @@ namespace ProAgil.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             var connection = Configuration["ConnectionStrings:DefaultConnection"];
-            services.AddDbContext<DataContext>(options =>
+            services.AddDbContext<ProAgilContext>(options =>
                 options.UseSqlite(connection));
                 
-            
+            services.AddScoped<IProAgilRepository, ProAgilRepository>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -56,6 +57,7 @@ namespace ProAgil.WebApi
 
             app.UseAuthorization();
             app.UseCors( x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
