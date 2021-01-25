@@ -58,7 +58,7 @@ namespace ProAgil.Repository
             return await query.ToArrayAsync(); 
 
         }
-        public async Task<Evento[]> GetAllEventosAsyncByTema(string Tema, bool includePalestrantes)
+        public async Task<Evento[]> GetAllEventosAsyncByTema(string Tema, bool includePalestrantes = false)
         {
             //FAZENDO A BUSCA NO BANCO DE DADOS
             IQueryable<Evento> query = _context.Eventos
@@ -77,12 +77,11 @@ namespace ProAgil.Repository
             //E VERIFICANDO QUAIS TEMAS CONTEM NO EVENTO            
             //E PARA EVITAR QUALQUER TIPO DE ERRO ESTÁ TRANSFORMANDO A STRING EM MINÚNCULO
             query = query.AsNoTracking()
-                    .OrderByDescending(c => c.DataEvento)
-                    .Where(c => c.Tema.ToLower().Contains(Tema.ToLower()));
+                    .Where(e => e.Tema.ToLower().Contains(Tema.ToLower()) );
 
             return await query.ToArrayAsync();
         }
-        public async Task<Evento> GetEventosAsyncById(int EventoId, bool includePalestrantes)
+        public async Task<Evento> GetEventoAsyncById(int EventoId, bool includePalestrantes = false)
         {
             //FAZENDO A BUSCA NO BANCO DE DADOS
             IQueryable<Evento> query = _context.Eventos
@@ -101,7 +100,7 @@ namespace ProAgil.Repository
             //E VERIFICANDO QUAL ID Q FOI REQUISITADO É IGUAL AO DO BANCO DE DADOS
             query = query.AsNoTracking()
                     .OrderByDescending(c => c.DataEvento)
-                    .Where(c => c.Id == EventoId);
+                    .Where(e => e.Id == EventoId);
 
             return await query.FirstOrDefaultAsync();
         }
@@ -153,6 +152,29 @@ namespace ProAgil.Repository
 
             return await query.ToArrayAsync();    
         
+        }
+
+        public async Task<Palestrante[]> GetPalestrantesAsyncByName(string Name, bool includeEventos = false)
+        {
+            //FAZENDO A BUSCA NO BANCO DE DADOS
+            IQueryable<Palestrante> query = _context.Palestrantes
+                    .Include(c => c.RedesSociais);
+
+            //FAZENDO O TRATAMENTO DA OPÇÃO DE PALESTRANTES
+            //MÉTODO NECESSÁRIO PARA NN FICAR CUSTOSO(PERFORMATICAMENTE) PRO BANCO DE DADOS
+            if(includeEventos){
+                query = query
+                    .Include(pe => pe.PalestranteEventos)
+                    .ThenInclude(p => p.Evento);
+            }
+
+            //ORDENANDO POR NOME
+            //E VERIFICANDO QUAL NOME É IGUAL AO NOME DO PALESTRANTE EXISTENTE
+            //E PARA EVITAR QUALQUER TIPO DE ERRO ESTÁ TRANSFORMANDO A STRING EM MINÚNCULO
+            query = query.AsNoTracking()
+                         .Where(p => p.Nome.ToLower() == Name.ToLower());
+
+            return await query.ToArrayAsync();            
         }
 
     }

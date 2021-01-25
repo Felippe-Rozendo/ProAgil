@@ -38,16 +38,30 @@ namespace ProAgil.WebApi.Controllers
 
         //MÉTODO GET
         [HttpGet("{EventoId}")]
-        public async Task<IActionResult> GetEventosById(int EventoId)
+        public async Task<IActionResult> Get(int EventoId)
         {
             try
             {
-                var result = await _repo.GetEventosAsyncById(EventoId, true);
-                return Ok(result);
+                var evento = await _repo.GetEventoAsyncById(EventoId, true);
+                return Ok(evento);
             }
-            catch (System.Exception)
+            catch (System.Exception e)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Erro no banco de dados");
+                return this.BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("tema/{EventoTema}")]
+        public async Task<IActionResult> GetByTema(string EventoTema)
+        {
+            try
+            {
+                var evento = await _repo.GetAllEventosAsyncByTema(EventoTema, true);
+                return Ok(evento);
+            }
+            catch (System.Exception e)
+            {
+                return this.BadRequest(e.Message);
             }
         }
 
@@ -57,7 +71,7 @@ namespace ProAgil.WebApi.Controllers
             try
             {
                 _repo.Add(model);
-                if(await _repo.SaveChangesAsync()) return Ok();
+                if(await _repo.SaveChangesAsync()) return Ok(model);
 
             }
             catch (System.Exception)
@@ -73,15 +87,15 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
-                var evento = await _repo.GetEventosAsyncById(eventoId, false);
+                var evento = await _repo.GetEventoAsyncById(eventoId, false);
                 if(evento == null) return NotFound();
 
                 _repo.Update(model);
                 if(await _repo.SaveChangesAsync()) return Ok(model);
             }
-            catch (System.Exception)
+            catch (System.Exception e)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Erro no banco de dados");
+                return this.BadRequest(e.Message);
             }
             return BadRequest();
         }
@@ -91,15 +105,15 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
-                var evento = await _repo.GetEventosAsyncById(EventoId, false);
+                var evento = await _repo.GetEventoAsyncById(EventoId, false);
                 if(evento == null) return NotFound();
                 
                 _repo.Delete(evento);
                 if(await _repo.SaveChangesAsync()) return Ok("Excluido com sucesso!");
             }
-            catch (System.Exception)
+            catch (System.Exception e)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Erro no banco de dados");
+                return this.BadRequest(e.Message);
             }
             return BadRequest();
         }
