@@ -74,9 +74,9 @@ namespace ProAgil.WebApi.Controllers
                 if(await _repo.SaveChangesAsync()) return Ok(model);
 
             }
-            catch (System.Exception)
+            catch (System.Exception e)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Erro no banco de dados");
+                return this.BadRequest(e.Message);
             }
             return BadRequest();
         }

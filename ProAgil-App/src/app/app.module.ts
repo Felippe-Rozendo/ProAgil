@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http'
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -12,6 +12,7 @@ import { AppComponent } from './app.component';
 import { EventosComponent } from "./components/eventos/eventos.component";
 import { NavComponent } from "./components/nav/nav.component";
 import { DateFormatPipe } from "./components/_helps/DateFormat.pipe";
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,9 @@ import { DateFormatPipe } from "./components/_helps/DateFormat.pipe";
     TooltipModule.forRoot(),  //forRoot() é para usar em todo aplicação
     ModalModule.forRoot(),
     BsDropdownModule.forRoot(),
-    BrowserAnimationsModule
+    BsDatepickerModule.forRoot(),
+    BrowserAnimationsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
