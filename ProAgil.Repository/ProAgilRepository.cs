@@ -53,7 +53,7 @@ namespace ProAgil.Repository
             }
 
             //ORDENANDO DO DATA MAIS ANTIGA PRA DATA MAIS NOVA
-            query = query.AsNoTracking().OrderByDescending(c => c.DataEvento);
+            query = query.AsNoTracking().OrderBy(c => c.Id);
 
             return await query.ToArrayAsync(); 
 
@@ -99,7 +99,7 @@ namespace ProAgil.Repository
             //ORDENANDO DO DATA MAIS ANTIGA PRA DATA MAIS NOVA
             //E VERIFICANDO QUAL ID Q FOI REQUISITADO É IGUAL AO DO BANCO DE DADOS
             query = query.AsNoTracking()
-                    .OrderByDescending(c => c.DataEvento)
+                    .OrderBy(c => c.Id)
                     .Where(e => e.Id == EventoId);
 
             return await query.FirstOrDefaultAsync();
@@ -122,10 +122,10 @@ namespace ProAgil.Repository
                     .ThenInclude(p => p.Evento);
             }
 
-            //ORDENANDO POR NOME
+            //ORDENANDO POR ID
             //E VERIFICANDO QUAL ID É IGUAL AO ID DO PALESTRANTE EXISTENTE
             query = query.AsNoTracking()
-                    .OrderByDescending(c => c.Nome)
+                    .OrderBy(c => c.Id)
                     .Where(c => c.Id == PalestranteId );
 
             return await query.FirstOrDefaultAsync();
@@ -144,11 +144,9 @@ namespace ProAgil.Repository
                     .ThenInclude(p => p.Evento);
             }
 
-            //ORDENANDO POR NOME
-            //E VERIFICANDO QUAL NOME É IGUAL AO NOME DO PALESTRANTE EXISTENTE
-            //E PARA EVITAR QUALQUER TIPO DE ERRO ESTÁ TRANSFORMANDO A STRING EM MINÚNCULO
+            //ORDENANDO POR ID
             query = query.AsNoTracking()
-                         .OrderBy( c => c.Nome );
+                         .OrderBy( c => c.Id );
 
             return await query.ToArrayAsync();    
         
@@ -172,6 +170,7 @@ namespace ProAgil.Repository
             //E VERIFICANDO QUAL NOME É IGUAL AO NOME DO PALESTRANTE EXISTENTE
             //E PARA EVITAR QUALQUER TIPO DE ERRO ESTÁ TRANSFORMANDO A STRING EM MINÚNCULO
             query = query.AsNoTracking()
+                         .OrderBy(n => n.Nome)
                          .Where(p => p.Nome.ToLower() == Name.ToLower());
 
             return await query.ToArrayAsync();            

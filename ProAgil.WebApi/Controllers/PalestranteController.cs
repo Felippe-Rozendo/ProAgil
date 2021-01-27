@@ -1,18 +1,22 @@
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProAgil.Domain;
 using ProAgil.Repository;
+using ProAgil.WebApi.Dtos;
 
 namespace ProAgil.WebApi.Controllers
-{        
+{
     [ApiController]
     [Route("/api/[controller]")]
-    public class PalestranteController: ControllerBase
+    public class PalestranteController : ControllerBase
     {
         private readonly IProAgilRepository _repo;
-        public PalestranteController(IProAgilRepository _repo)
+        private readonly IMapper _mapper;
+        public PalestranteController(IProAgilRepository _repo, IMapper _mapper)
         {
+            this._mapper = _mapper;
             this._repo = _repo;
 
         }
@@ -23,7 +27,8 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
-                var result = await _repo.GetAllPalestrantesAsync(true);
+                var palestrante = await _repo.GetAllPalestrantesAsync(true);
+                var result = _mapper.Map<PalestranteDto[]>(palestrante);
                 return Ok(result);
             }
             catch (System.Exception e)
@@ -37,7 +42,8 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
-                var result = await _repo.GetPalestrantesAsyncByName(PalestranteNome, true);
+                var palestrante = await _repo.GetPalestrantesAsyncByName(PalestranteNome, true);
+                var result = _mapper.Map<PalestranteDto[]>(palestrante);
                 return Ok(result);
             }
             catch (System.Exception e)
@@ -52,7 +58,8 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
-                var result = await _repo.GetPalestranteAsyncById(PalestranteId, true);
+                var palestrante = await _repo.GetPalestranteAsyncById(PalestranteId, true);
+                var result = _mapper.Map<PalestranteDto>(palestrante);
                 return Ok(result);
             }
             catch (System.Exception e)
@@ -63,12 +70,13 @@ namespace ProAgil.WebApi.Controllers
 
         //MÉTODO POST
         [HttpPost]
-        public async Task<IActionResult> Post(Palestrante model)
+        public async Task<IActionResult> Post(PalestranteDto model)
         {
             try
             {
-                _repo.Add(model);
-                if(await _repo.SaveChangesAsync()) return Ok(model);
+                var result = _mapper.Map<Palestrante>(model);
+                _repo.Add(result);
+                if (await _repo.SaveChangesAsync()) return Ok(_mapper.Map<Palestrante>(result));
 
             }
             catch (System.Exception e)
@@ -80,15 +88,16 @@ namespace ProAgil.WebApi.Controllers
 
         //MÉTODO UPDATE
         [HttpPut("{PalestranteId}")]
-        public async Task<IActionResult> Put(int PalestranteId, Palestrante model)
+        public async Task<IActionResult> Put(int PalestranteId, PalestranteDto model)
         {
             try
             {
                 var palestrante = await _repo.GetPalestranteAsyncById(PalestranteId, false);
-                if(palestrante == null) return NotFound();
+                if (palestrante == null) return NotFound();
+                _mapper.Map(model, palestrante);
 
-                _repo.Update(model);
-                if(await _repo.SaveChangesAsync()) return Ok(model);
+                _repo.Update(palestrante);
+                if (await _repo.SaveChangesAsync()) return Ok(_mapper.Map<PalestranteDto>(palestrante));
             }
             catch (System.Exception e)
             {
@@ -104,17 +113,17 @@ namespace ProAgil.WebApi.Controllers
             try
             {
                 var palestrante = await _repo.GetPalestranteAsyncById(PalestranteId, false);
-                if(palestrante == null) return NotFound();
-                
+                if (palestrante == null) return NotFound();
+
                 _repo.Delete(palestrante);
-                if(await _repo.SaveChangesAsync()) return Ok("Excluido com sucesso!");
+                if (await _repo.SaveChangesAsync()) return Ok("Excluido com sucesso!");
             }
             catch (System.Exception e)
             {
                 return this.BadRequest(e.Message);
             }
             return BadRequest();
-        }    
+        }
 
     }
 }
