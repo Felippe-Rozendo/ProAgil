@@ -31,7 +31,7 @@ export class EventoService {
   updateEvento(evento: Evento){
     return this.http.put(`${this.Url}/${evento.id}`, evento);
   }
-  
+
   deleteEvento(id: number) {
     return this.http.delete(`${this.Url}/${id}`);
 	}

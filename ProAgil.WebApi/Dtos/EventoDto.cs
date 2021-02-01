@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,7 +10,7 @@ namespace ProAgil.WebApi.Dtos
         [Required]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "O campo deve conter entre 2 e 50 caracteres.")]
         public string Local { get; set; }
-        public string DataEvento { get; set; }
+        public DateTime DataEvento { get; set; }
         [Required]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "O campo deve conter entre 2 e 50 caracteres.")]
         public string Tema { get; set; }

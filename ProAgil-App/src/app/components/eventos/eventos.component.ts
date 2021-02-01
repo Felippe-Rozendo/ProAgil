@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Evento } from '../_models/Evento';
 import { EventoService } from '../_services/evento.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BsLocaleService } from 'ngx-bootstrap/datepicker';
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { ptBrLocale } from 'ngx-bootstrap/locale';
+import { ToastrService } from 'ngx-toastr';
 defineLocale('pt-br', ptBrLocale);
 
 @Component({
@@ -24,19 +25,22 @@ export class EventosComponent implements OnInit {
     private eService: EventoService,
     private fb: FormBuilder,
     private localeService: BsLocaleService,
-    private modalService: BsModalService
+    private modalService: BsModalService,
+    private toastr: ToastrService
   ) {
     this.localeService.use('pt-br');
   }
 
+  title = 'Eventos';
   eventos: Evento[];
   evento: Evento;
+  dataEvento: string;;
 
   imgAltura = 50;
   imgMargem = 2;
   mostrarImagem = false;
 
-  modalRef: BsModalRef;
+  deleteRef: BsModalRef;
 
   registerForm: FormGroup;
 
@@ -111,8 +115,11 @@ export class EventosComponent implements OnInit {
           () => {
             template.hide();
             this.getEventos();
+            this.toastr.success('Evento criado com sucesso!');
           },
-          (error) => { console.error(error) }
+          (erro: any) => {
+            console.error(erro);
+          }
         );
       } else {
         this.evento = Object.assign({ id: this.evento.id }, this.registerForm.value);
@@ -120,29 +127,42 @@ export class EventosComponent implements OnInit {
           () => {
             template.hide();
             this.getEventos();
+            this.toastr.success('Editado com sucesso!');
           },
-          (error) => { console.error(error) }
+          (erro: any) => {
+            console.error(erro);
+          }
         );
       }
     }
   }
 
-  bodyDeletarEvento = '';
-  excluirEvento(evento: Evento, template: any) {
-    this.openModal(template);
-    this.evento = evento;
-    this.bodyDeletarEvento = `Tem certeza que deseja excluir o Evento: ${evento.tema}, Código: ${evento.id}`;
+  @ViewChild('confirm') confirm;
+  eventoSelecionado;
+
+  excluirEvento(evento) {
+    this.eventoSelecionado = evento;
+    this.deleteRef = this.modalService.show(this.confirm, { class: 'modal-sm' });
   }
 
-  confirmeDelete(template: any) {
-    this.eService.deleteEvento(this.evento.id).subscribe(
+  confirmDelete() {
+    this.eService.deleteEvento(this.eventoSelecionado.id).subscribe(
       () => {
-        template.hide();
+        console.error();
+      },
+      () => {
         this.getEventos();
-      }, error => {
-        console.log(error);
+        this.deleteRef.hide();
+        this.toastr.success('Excluido com sucesso!');
       }
     );
   }
+
+  decline() {
+    this.deleteRef.hide();
+  }
+
+
+
 
 }

@@ -32,7 +32,7 @@ namespace ProAgil.WebApi
             var connection = Configuration["ConnectionStrings:DefaultConnection"];
             services.AddDbContext<ProAgilContext>(options =>
                 options.UseSqlite(connection));
-                
+
             services.AddScoped<IProAgilRepository, ProAgilRepository>();
             services.AddAutoMapper();
             services.AddControllers();
@@ -57,9 +57,8 @@ namespace ProAgil.WebApi
             app.UseRouting();
 
             app.UseAuthorization();
-            app.UseCors( x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseStaticFiles();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

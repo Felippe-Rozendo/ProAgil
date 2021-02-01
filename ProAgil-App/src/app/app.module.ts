@@ -6,20 +6,31 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
+import { ToastrModule } from 'ngx-toastr';
 import { AppRoutingModule } from './app-routing.module';
+import { DateFormatPipe } from "./components/_helps/DateFormat.pipe";
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+
+//COMPONENTES
 import { AppComponent } from './app.component';
 import { EventosComponent } from "./components/eventos/eventos.component";
 import { NavComponent } from "./components/nav/nav.component";
-import { DateFormatPipe } from "./components/_helps/DateFormat.pipe";
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { PalestrantesComponent } from "./components/palestrantes/palestrantes.component";
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { ContatosComponent } from './components/contatos/contatos.component';
+import { TituloComponent } from './components/titulo/titulo.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     EventosComponent,
     NavComponent,
-    DateFormatPipe
+    PalestrantesComponent,
+    DashboardComponent,
+    ContatosComponent,
+    DateFormatPipe,
+    TituloComponent
   ],
   imports: [
     BrowserModule,
@@ -30,6 +41,11 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     ModalModule.forRoot(),
     BsDropdownModule.forRoot(),
     BsDatepickerModule.forRoot(),
+    ToastrModule.forRoot({
+      timeOut: 3000,
+      positionClass: 'toast-bottom-right',
+      preventDuplicates: true,
+    }),
     BrowserAnimationsModule,
     ReactiveFormsModule
   ],
