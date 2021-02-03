@@ -34,11 +34,15 @@ export class EventosComponent implements OnInit {
   title = 'Eventos';
   eventos: Evento[];
   evento: Evento;
-  dataEvento: string;;
+  dataEvento: string;
+  modo: string;
 
   imgAltura = 50;
   imgMargem = 2;
   mostrarImagem = false;
+  file: File;
+  nameToImage: string;
+  dataAtual: string;
 
   deleteRef: BsModalRef;
 
@@ -95,22 +99,57 @@ export class EventosComponent implements OnInit {
     })
   }
 
-  modo: string;
   eventoEdit(evento: Evento, template: any) {
     this.modo = 'put'
     this.openModal(template)
     this.evento = Object.assign({}, evento);
-    this.registerForm.patchValue(evento)
+    this.nameToImage = evento.imageURL.toString();
+    this.evento.imageURL = '';
+    this.registerForm.patchValue(this.evento)
+
   }
+
   novoEvento(template: any) {
     this.modo = 'post'
     this.openModal(template);
+  }
+
+  onFileChange(event) {
+    if (event.target.files && event.target.files.length) {
+      this.file = event.target.files;
+      console.log(this.file);
+    }
+  }
+
+  uploadImage() {
+    if (this.modo === 'post') {
+      const nomeArquivo = this.evento.imageURL.split('\\', 3);
+      this.evento.imageURL = nomeArquivo[2];
+      this.eService.postUpload(this.file, nomeArquivo[2])
+      .subscribe(
+        () => {
+          this.dataAtual = new Date().getMilliseconds().toString();
+          this.getEventos();
+        }
+      );
+    }else{
+      this.evento.imageURL = this.nameToImage;
+      this.eService.postUpload(this.file, this.nameToImage)
+      .subscribe(
+        () => {
+          this.dataAtual = new Date().getMilliseconds().toString();
+          this.getEventos();
+        }
+      );
+    }
+
   }
 
   salvarAlteracao(template: any) {
     if (this.registerForm.valid) {
       if (this.modo === 'post') {
         this.evento = Object.assign({}, this.registerForm.value);
+        this.uploadImage();
         this.eService.postEvento(this.evento).subscribe(
           () => {
             template.hide();
@@ -123,6 +162,7 @@ export class EventosComponent implements OnInit {
         );
       } else {
         this.evento = Object.assign({ id: this.evento.id }, this.registerForm.value);
+        this.uploadImage();
         this.eService.updateEvento(this.evento).subscribe(
           () => {
             template.hide();
@@ -161,8 +201,5 @@ export class EventosComponent implements OnInit {
   decline() {
     this.deleteRef.hide();
   }
-
-
-
 
 }
